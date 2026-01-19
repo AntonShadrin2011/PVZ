@@ -2,6 +2,8 @@ import time
 
 import arcade
 
+from Solnish import Solnish
+
 
 class Plants(arcade.Sprite):
     def __init__(self,vid,center_x, center_y , price, hp):
@@ -15,12 +17,16 @@ class Plants(arcade.Sprite):
 
 
 class Podsolnyx(Plants):
-    def __init__(self,center_x, center_y  ):
+    def __init__(self,center_x, center_y,main_class  ):
         super().__init__(vid = 'graphics/Plants/SunFlower/SunFlower_0.png' , center_x = center_x, center_y = center_y, price = 50, hp= 100)
         self.timer = time.time()
+        self.main_class = main_class
     def update(self):
         if time.time() - self.timer >= 7:
-            pass
+            sol = Solnish('graphics/Plants/Sun/Sun_0.png',200 , 200, 2)
+            self.timer = time.time()
+            self.main_class.solnish_sprite.append(sol)
+
 
 
 class Orex(Plants):

@@ -1,4 +1,6 @@
 import arcade
+import time
+import Solnish
 from plants import Podsolnyx, Goroxostrel, Orex, CherryBomb
 import random
 
@@ -12,6 +14,7 @@ class MyGame(arcade.Window):
         super().__init__(width, height, title)
         self.ryka = None
         self.solnish_sprite = arcade.SpriteList()
+        self.timer = time.time()
         self.background = arcade.load_texture('graphics/Items/Background/Background_0.jpg')
         self.background_m = arcade.load_texture('graphics/Screen/ChooserBackground.png')
         self.cards_money = arcade.load_texture('graphics/Cards/card_sunflower.png')
@@ -26,6 +29,7 @@ class MyGame(arcade.Window):
         self.plants_sprite = arcade.SpriteList()
         self.money = 50
         self.background_sound = None
+        self.game_paused = False
 
     def setup(self):
         self.background_sound = arcade.load_sound("sounds/grasswalk.mp3")
@@ -48,29 +52,46 @@ class MyGame(arcade.Window):
                 texture=texture
             )
 
-        arcade.draw_text(str(self.money), 37, 720, arcade.color.GOLD, 20)
+        arcade.draw_text(str(self.money), 47, 707, arcade.color.GOLD, 20, anchor_x="center")
         self.solnish_sprite.draw()
         self.plants_sprite.draw()
 
         if self.ryka is not None:
             self.ryka.draw()
 
+        if self.game_paused:
+            arcade.draw_text("PAUSED", SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, arcade.color.RED, 72, anchor_x="center", anchor_y="center")
+
     def on_update(self, delta_time: float):
-        self.solnish_sprite.update()
+        if not self.game_paused:
+            self.solnish_sprite.update()
+            self.plants_sprite.update()
+            if time.time() - self.timer >= 5:
+                sol = Solnish.Solnish('graphics/Plants/Sun/Sun_0.png', random.randint(100, 1600), 870,1)
+                self.timer = time.time()
+                self.solnish_sprite.append(sol)
+
 
     def on_key_press(self, symbol: int, modifiers: int):
-        pass
+        if symbol == arcade.key.P:
+            self.game_paused = not self.game_paused
 
     def on_key_release(self, symbol: int, modifiers: int):
         pass
 
     def on_mouse_press(self, x: int, y: int, button: int, modifiers: int):
+        if self.game_paused:
+            return
         print(x,y)
+        for i in self.solnish_sprite:
+            if (i. left <= x <= i.right) and (i.bottom <= y <= i.top):
+                i.kill()
+                self.money += 50
         if y > 715:
 
             if 88 < x < 134:
                 print('f')
-                self.ryka = Podsolnyx(x, y)
+                self.ryka = Podsolnyx(x, y,self)
                 self.ryka.alpha = 170
 
             elif 148 < x < 194:
@@ -89,12 +110,16 @@ class MyGame(arcade.Window):
                 self.ryka.alpha = 170
 
     def on_mouse_motion(self, x: int, y: int, dx: int, dy: int):
+        if self.game_paused:
+            return
         if self.ryka is not None:
             self.ryka.center_x = x
             self.ryka.center_y = y
 
 
     def on_mouse_release(self, x: int, y: int, button: int, modifiers: int):
+        if self.game_paused:
+            return
         if self.ryka is not None:
             if self.money >= self.ryka.price:
                 if 295 < x < 1178 and 44 < y < 681:
@@ -114,12 +139,3 @@ class MyGame(arcade.Window):
 
 okno = MyGame(width=SCREEN_WIDTH, height=SCREEN_HEIGHT, title=SCREEN_TITLE)
 arcade.run()
-
-
-
-'''
-Выравнить надпись 
-Сделать паузу в игре при нажатии на клавишу ( задание по желанию) 
-Попробовать сделать зомби в отдельном файле и заставить их идти в сторону наших растений 
-
-'''
