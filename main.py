@@ -4,6 +4,8 @@ import Solnish
 from plants import Podsolnyx, Goroxostrel, Orex, CherryBomb
 import random
 
+from zombi import Default
+
 SCREEN_WIDTH = 1700
 SCREEN_HEIGHT = 800
 SCREEN_TITLE = 'PVZ'
@@ -14,6 +16,8 @@ class MyGame(arcade.Window):
         super().__init__(width, height, title)
         self.ryka = None
         self.solnish_sprite = arcade.SpriteList()
+        self.goroshik_sprite = arcade.SpriteList()
+        self.zombi_sprite = arcade.SpriteList()
         self.timer = time.time()
         self.background = arcade.load_texture('graphics/Items/Background/Background_0.jpg')
         self.background_m = arcade.load_texture('graphics/Screen/ChooserBackground.png')
@@ -53,8 +57,10 @@ class MyGame(arcade.Window):
             )
 
         arcade.draw_text(str(self.money), 47, 707, arcade.color.GOLD, 20, anchor_x="center")
-        self.solnish_sprite.draw()
         self.plants_sprite.draw()
+        self.solnish_sprite.draw()
+        self.goroshik_sprite.draw()
+        self.zombi_sprite.draw()
 
         if self.ryka is not None:
             self.ryka.draw()
@@ -66,11 +72,16 @@ class MyGame(arcade.Window):
         if not self.game_paused:
             self.solnish_sprite.update()
             self.plants_sprite.update()
+            self.goroshik_sprite.update()
+            self.zombi_sprite.update()
             if time.time() - self.timer >= 5:
                 sol = Solnish.Solnish('graphics/Plants/Sun/Sun_0.png', random.randint(100, 1600), 870,1)
                 self.timer = time.time()
                 self.solnish_sprite.append(sol)
-
+            # todo: сделать так, чтобы зомби не спавнились бесконечно, а тут просто создать таймер отдельный (смотреть на строчку 77)
+            spisok_coords = [100, 200, 300, 400, 500]   # todo: change coords
+            zombi = Default(random.choice(spisok_coords),0)
+            self.zombi_sprite.append(zombi)
 
     def on_key_press(self, symbol: int, modifiers: int):
         if symbol == arcade.key.P:
@@ -97,7 +108,7 @@ class MyGame(arcade.Window):
             elif 148 < x < 194:
                 print('peashooter')
 
-                self.ryka = Goroxostrel(x, y)
+                self.ryka = Goroxostrel(x, y,self)
                 self.ryka.alpha = 170
 
             elif 208 < x < 254:
@@ -139,3 +150,9 @@ class MyGame(arcade.Window):
 
 okno = MyGame(width=SCREEN_WIDTH, height=SCREEN_HEIGHT, title=SCREEN_TITLE)
 arcade.run()
+
+"""
+1. Сделать тудушки в апдейте
+2. Добавить газонокосилки (спрайтлист + отрисовать + создать класс + вызвать апдейт) + выставить 5 штук слева от поля
+
+"""

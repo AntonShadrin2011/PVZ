@@ -3,6 +3,7 @@ import time
 import arcade
 
 from Solnish import Solnish
+from goroshik import Goroshik
 
 
 class Plants(arcade.Sprite):
@@ -22,8 +23,8 @@ class Podsolnyx(Plants):
         self.timer = time.time()
         self.main_class = main_class
     def update(self):
-        if time.time() - self.timer >= 7:
-            sol = Solnish('graphics/Plants/Sun/Sun_0.png',200 , 200, 2)
+        if time.time() - self.timer >= 1:
+            sol = Solnish('graphics/Plants/Sun/Sun_0.png',self.center_x,self.center_y, 2)
             self.timer = time.time()
             self.main_class.solnish_sprite.append(sol)
 
@@ -34,8 +35,15 @@ class Orex(Plants):
         super().__init__(vid = 'graphics/Plants/WallNut/WallNut/WallNut_0.png' , center_x = center_x, center_y = center_y, price = 50, hp= 700)
 
 class Goroxostrel(Plants):
-    def __init__(self,center_x, center_y  ):
+    def __init__(self,center_x, center_y,main_class  ):
         super().__init__(vid = 'graphics/Plants/Peashooter/Peashooter_0.png' , center_x = center_x, center_y = center_y, price = 100, hp= 200)
+        self.timer = time.time()
+        self.main_class = main_class
+    def update(self):
+        if time.time() - self.timer >= 1:
+            sol = Goroshik('graphics/Bullets/PeaNormal/PeaNormal_0.png',self.center_x,self.center_y)
+            self.timer = time.time()
+            self.main_class.goroshik_sprite.append(sol)
 
 
 
