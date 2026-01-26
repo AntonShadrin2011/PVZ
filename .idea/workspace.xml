@@ -4,7 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="42afaaef-6233-4b15-865c-7fe7966d852f" name="Changes" comment="1" />
+    <list default="true" id="42afaaef-6233-4b15-865c-7fe7966d852f" name="Changes" comment="1">
+      <change afterPath="$PROJECT_DIR$/anim.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/goroshik.py" beforeDir="false" afterPath="$PROJECT_DIR$/goroshik.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plants.py" beforeDir="false" afterPath="$PROJECT_DIR$/plants.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/zombi.py" beforeDir="false" afterPath="$PROJECT_DIR$/zombi.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -20,15 +27,21 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/AntonShadrin2011/PVZ.git",
-    "accountId": "1b90ac1e-f631-4f1a-a92c-200dd8a42780"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;AntonShadrin2011&quot;
   }
-}]]></component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 8
-}]]></component>
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/AntonShadrin2011/PVZ.git&quot;,
+    &quot;accountId&quot;: &quot;1b90ac1e-f631-4f1a-a92c-200dd8a42780&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
   <component name="ProjectId" id="38TcV4XfEvGtJOaAm3ox1wLAJ8L" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
