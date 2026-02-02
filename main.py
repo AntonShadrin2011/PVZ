@@ -2,7 +2,7 @@ import arcade
 import time
 import random
 import Solnish
-from plants import Podsolnyx, Goroxostrel, Orex, CherryBomb
+from plants import Orex
 from zombi import Default, ZombiKonys, ZombiVedro
 
 SCREEN_WIDTH = 1700
@@ -10,20 +10,22 @@ SCREEN_HEIGHT = 800
 SCREEN_TITLE = 'PVZ'
 
 
-class LawnMower:
+class LawnMower(arcade.Sprite):
     def __init__(self, x, y):
-        self.sprite = arcade.Sprite('graphics/Screen/car.png')
-        self.sprite.center_x = x
-        self.sprite.center_y = y
+        super().__init__('graphics/Screen/car.png')
+        self.center_x = x
+        self.center_y = y
         self.active = False
         self.speed = 10
+        self.has_been_activated = False
 
     def update(self):
         if self.active:
-            self.sprite.center_x += self.speed
+            self.center_x += self.speed
+            if self.center_x > SCREEN_WIDTH + 100:
+                self.active = False
 
-    def draw(self):
-        self.sprite.draw()
+
 
 
 class MyGame(arcade.Window):
@@ -48,15 +50,16 @@ class MyGame(arcade.Window):
         self.money = 50
         self.background_sound = None
         self.game_paused = False
-        self.lawn_mowers = []
+        self.lawn_mowers = arcade.SpriteList()
+        self.game_over = False
 
     def setup(self):
         self.background_sound = arcade.load_sound("sounds/grasswalk.mp3")
-        arcade.play_sound(self.background_sound, looping=True)
+        #arcade.play_sound(self.background_sound, looping=True)
 
-        lawn_mower_y_positions = [100, 200, 300, 400, 500]
+        lawn_mower_y_positions = [120, 242, 361, 491, 618]
         for y_pos in lawn_mower_y_positions:
-            mower = LawnMower(50, y_pos)
+            mower = LawnMower(270, y_pos)
             self.lawn_mowers.append(mower)
 
     def on_draw(self):
@@ -81,7 +84,7 @@ class MyGame(arcade.Window):
         self.solnish_sprite.draw()
         self.goroshik_sprite.draw()
         self.zombi_sprite.draw()
-
+        self.lawn_mowers.draw()
         for mower in self.lawn_mowers:
             mower.draw()
 
@@ -92,36 +95,58 @@ class MyGame(arcade.Window):
             arcade.draw_text("PAUSED", SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, arcade.color.RED, 72, anchor_x="center",
                              anchor_y="center")
 
+        if self.game_over:
+            arcade.draw_text("GAME OVER", SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, arcade.color.RED, 72,
+                             anchor_x="center",
+                             anchor_y="center")
+
     def on_update(self, delta_time: float):
-        if not self.game_paused:
-            self.solnish_sprite.update_animation()
-            self.solnish_sprite.update()
-            self.plants_sprite.update()
-            self.plants_sprite.update_animation()
-            self.goroshik_sprite.update()
-            self.zombi_sprite.update()
-            self.zombi_sprite.update_animation()
+        if self.game_over or self.game_paused:
+            return
+
+        self.solnish_sprite.update_animation()
+        self.solnish_sprite.update()
+        self.plants_sprite.update()
+        self.plants_sprite.update_animation()
+        self.goroshik_sprite.update()
+        self.zombi_sprite.update()
+        self.zombi_sprite.update_animation()
+
+        for mower in self.lawn_mowers:
+            mower.update()
+
+
+        for zombi in self.zombi_sprite:
+
+            if zombi.center_x < 50:
+                self.game_over = True
+                return
+
 
             for mower in self.lawn_mowers:
-                mower.update()
+                hit_list = arcade.check_for_collision_with_list(mower, self.zombi_sprite)
+                if len(hit_list) > 0:
+                    mower.active = True
+                    for zomb in hit_list:
+                        zomb.hp = zomb.hp - 1000
 
-            if time.time() - self.timer >= 5:
-                sol = Solnish.Solnish('graphics/Plants/Sun/Sun_0.png', random.randint(100, 1600), 870, 1)
-                self.timer = time.time()
-                self.solnish_sprite.append(sol)
+        if time.time() - self.timer >= 5:
+            sol = Solnish.Solnish('graphics/Plants/Sun/Sun_0.png', random.randint(100, 1600), 870, 1)
+            self.timer = time.time()
+            self.solnish_sprite.append(sol)
 
-            if time.time() - self.zombi_timer >= 2:
-                spisok_coords = [108, 234, 353, 486, 620]
-                chislo = random.randint(0, 2)
-                zombi = 0
-                if chislo == 0:
-                    zombi = Default(random.choice(spisok_coords), 0, self)
-                elif chislo == 1:
-                    zombi = ZombiKonys(random.choice(spisok_coords), 0, self)
-                elif chislo == 2:
-                    zombi = ZombiVedro(random.choice(spisok_coords), 0, self)
-                self.zombi_sprite.append(zombi)
-                self.zombi_timer = time.time()
+        if time.time() - self.zombi_timer >= 2:
+            spisok_coords = [108, 234, 353, 486, 620]
+            chislo = random.randint(0, 2)
+            zombi = 0
+            if chislo == 0:
+                zombi = Default(random.choice(spisok_coords), 0, self)
+            elif chislo == 1:
+                zombi = ZombiKonys(random.choice(spisok_coords), 0, self)
+            elif chislo == 2:
+                zombi = ZombiVedro(random.choice(spisok_coords), 0, self)
+            self.zombi_sprite.append(zombi)
+            self.zombi_timer = time.time()
 
     def on_key_press(self, symbol: int, modifiers: int):
         if symbol == arcade.key.P:
@@ -131,8 +156,12 @@ class MyGame(arcade.Window):
         pass
 
     def on_mouse_press(self, x: int, y: int, button: int, modifiers: int):
-        if self.game_paused:
+        if self.game_paused or self.game_over:
             return
+
+
+        from plants import Podsolnyx, Goroxostrel, Orex, CherryBomb
+
         print(x, y)
         for i in self.solnish_sprite:
             if (i.left <= x <= i.right) and (i.bottom <= y <= i.top):
@@ -156,18 +185,48 @@ class MyGame(arcade.Window):
                 self.ryka.alpha = 170
 
     def on_mouse_motion(self, x: int, y: int, dx: int, dy: int):
-        if self.game_paused:
+        if self.game_paused or self.game_over:
             return
         if self.ryka is not None:
             self.ryka.center_x = x
             self.ryka.center_y = y
 
     def on_mouse_release(self, x: int, y: int, button: int, modifiers: int):
-        if self.game_paused:
+        if self.game_paused or self.game_over:
             return
         if self.ryka is not None:
             if self.money >= self.ryka.price:
                 if 295 < x < 1178 and 44 < y < 681:
+                    if 295 < x < 405:
+                        self.ryka.center_x = 350
+                    if 405 < x < 498:
+                        self.ryka.center_x = 451.5
+                    if 498 < x < 591:
+                        self.ryka.center_x = 544.5
+                    if 591 < x < 696:
+                        self.ryka.center_x = 643.5
+                    if 696 < x < 785:
+                        self.ryka.center_x = 727
+                    if 785 < x < 892:
+                        self.ryka.center_x = 838.5
+                    if 892 < x < 974:
+                        self.ryka.center_x = 933
+                    if 974 < x < 1078:
+                        self.ryka.center_x = 1026
+                    if 1078 < x < 1198:
+                        self.ryka.center_x = 1138
+
+
+                    if 36 < y < 172:
+                        self.ryka.center_y = 104
+                    if 172 < y < 300:
+                        self.ryka.center_y = 236
+                    if 300 < y < 438:
+                        self.ryka.center_y = 369
+                    if 438 < y < 571:
+                        self.ryka.center_y = 504
+                    if 571 < y < 700:
+                        self.ryka.center_y = 636
                     self.plants_sprite.append(self.ryka)
                     self.ryka.alpha = 255
                     self.money -= self.ryka.price

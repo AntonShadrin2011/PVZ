@@ -15,7 +15,7 @@ class Zombi(Animation):
         self.left = 1700
         self.hp = hp
         self.row = row
-        self.change_x = 1
+        self.change_x = 10
         self.main_class = main_class
     def update(self):
         if not self.ataca:
